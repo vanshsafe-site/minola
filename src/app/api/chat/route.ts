@@ -20,22 +20,21 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // For debugging (remove in production)
     console.log(`Using model: ${model}`);
-    console.log(`API Key used: ${apiKey.substring(0, 8)}...`);
     
-    // Call OpenRouter API
+    // Create a simplified request to the OpenRouter API
     const openRouterResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
-        'HTTP-Referer': request.headers.get('origin') || 'https://pooja-chatbot.vercel.app',
-        'X-Title': 'P.O.O.J.A Mental Health Assistant',
         'Content-Type': 'application/json',
+        'X-Title': 'P.O.O.J.A Mental Health Assistant'
       },
       body: JSON.stringify({
         model,
         messages,
+        max_tokens: 200, // Limit the response length
+        temperature: 0.7 // Add some randomness but not too much
       }),
     });
 
