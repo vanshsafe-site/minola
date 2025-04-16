@@ -1,26 +1,439 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --primary: #ff69b4; /* Hot Pink */
+  --secondary: #ff1493; /* Deep Pink */
+  --background: #121212;
+  --card-background: #1E1E1E;
+  --text-primary: #ffffff;
+  --text-secondary: #B0B0B0;
+  --shadow: 0 10px 30px rgba(255, 105, 180, 0.15);
+  --animation-speed: 0.3s;
 }
 
 @theme inline {
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-foreground: var(--text-primary);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #121212;
     --foreground: #ededed;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--background);
+  color: var(--text-primary);
+  min-height: 100vh;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+.container {
+  background-color: var(--card-background);
+  max-width: 600px;
+  width: 100%;
+  border: 2px solid var(--primary);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  margin: 0 auto;
+  margin-bottom: 20px;
+  padding: 0;
+}
+
+.header {
+  padding: 25px 25px 15px 25px;
+  text-align: center;
+  background-color: var(--card-background);
+  border-bottom: 2px solid var(--primary);
+  color: var(--primary);
+  font-size: 2em;
+  font-weight: bold;
+  letter-spacing: 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.header i {
+  font-size: 0.8em;
+}
+
+.description {
+  padding: 5px 25px 15px 25px;
+  text-align: center;
+  background-color: var(--card-background);
+  color: var(--text-secondary);
+  font-size: 1em;
+}
+
+.acronym-explanation {
+  font-size: 1em;
+  text-align: center;
+  padding: 0 25px 15px 25px;
+  color: rgba(255, 105, 180, 0.8);
+  font-style: italic;
+  background-color: var(--card-background);
+  line-height: 1.4;
+  margin-bottom: 5px;
+}
+
+.acronym-explanation span {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.chat-interface {
+  background-color: var(--card-background);
+  border-top: 1px solid rgba(255, 105, 180, 0.3);
+  padding: 15px;
+  max-height: 400px;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+.chat-message {
+  margin-bottom: 15px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.chat-bubble {
+  border-radius: 18px;
+  padding: 10px 15px;
+  max-width: 80%;
+  line-height: 1.4;
+  position: relative;
+  margin: 5px;
+}
+
+.user-message {
+  justify-content: flex-end;
+}
+
+.user-message .chat-bubble {
+  background-color: var(--primary);
+  color: white;
+  border-bottom-right-radius: 5px;
+}
+
+.ai-message .chat-bubble {
+  background-color: #2A2A2A;
+  color: var(--text-primary);
+  border-bottom-left-radius: 5px;
+}
+
+.message-time {
+  font-size: 0.7em;
+  color: var(--text-secondary);
+  margin-top: 5px;
+  text-align: right;
+}
+
+.typing-indicator {
+  display: inline-block;
+  padding: 10px 15px;
+  background-color: #2A2A2A;
+  border-radius: 18px;
+  border-bottom-left-radius: 5px;
+  margin: 5px;
+}
+
+.typing-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--text-secondary);
+  margin-right: 4px;
+  animation: typingAnimation 1.4s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+  margin-right: 0;
+}
+
+@keyframes typingAnimation {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-6px); }
+}
+
+.input-container {
+  display: flex;
+  padding: 15px;
+  background-color: var(--card-background);
+  border-top: 1px solid rgba(255, 105, 180, 0.3);
+}
+
+.chat-input {
+  flex: 1;
+  padding: 12px 15px;
+  border-radius: 20px;
+  border: 1px solid var(--primary);
+  background-color: var(--background);
+  color: var(--text-primary);
+  font-size: 16px;
+  outline: none;
+}
+
+.chat-input:focus {
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 2px rgba(255, 105, 180, 0.2);
+}
+
+.voice-button, .send-button {
+  background-color: transparent;
+  color: var(--primary);
+  border: none;
+  width: 45px;
+  height: 45px;
+  margin-left: 10px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  padding: 0;
+}
+
+.voice-button:hover, .send-button:hover {
+  color: var(--secondary);
+}
+
+.voice-button.listening {
+  color: #dc3545;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.status-indicator {
+  padding: 10px 15px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.9em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.audio-visualizer {
+  height: 30px;
+  background-color: var(--card-background);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 3px;
+  margin: 10px 0;
+  padding: 0 15px;
+}
+
+.visualizer-bar {
+  width: 4px;
+  background-color: var(--primary);
+  border-radius: 2px;
+  height: 5px;
+  transition: height 0.1s ease;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 0 15px 15px;
+}
+
+.control-button {
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: 1px solid var(--primary);
+  background-color: transparent;
+  color: var(--primary);
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.control-button:hover {
+  background-color: rgba(255, 105, 180, 0.1);
+}
+
+.settings-panel {
+  background-color: var(--card-background);
+  padding: 20px;
+  border-top: 1px solid rgba(255, 105, 180, 0.3);
+  display: none;
+}
+
+.settings-title {
+  font-size: 1.2em;
+  margin-bottom: 15px;
+  color: var(--primary);
+}
+
+.settings-option {
+  margin-bottom: 15px;
+}
+
+.settings-label {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--text-secondary);
+}
+
+.settings-select, .modal-input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--primary);
+  background-color: var(--background);
+  color: var(--text-primary);
+}
+
+.api-key-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.api-key-container .settings-select {
+  flex: 1;
+}
+
+.api-key-container .control-button {
+  white-space: nowrap;
+  margin: 0;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: var(--card-background);
+  padding: 30px;
+  border-radius: 12px;
+  border: 2px solid var(--primary);
+  width: 90%;
+  max-width: 400px;
+  position: relative;
+}
+
+.modal-title {
+  color: var(--primary);
+  font-size: 1.5em;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.modal-button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background-color: var(--primary);
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.modal-button:hover {
+  background-color: var(--secondary);
+}
+
+/* Add a container for the profile image */
+.profile-image-container {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  margin: 20px auto;
+  overflow: hidden;
+  border: 3px solid var(--primary);
+  box-shadow: 0 0 20px rgba(255, 105, 180, 0.3);
+}
+
+.profile-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.8);
+  display: block;
+  margin-top: 5px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 480px) {
+  .container {
+    width: 100%;
+    margin: 10px;
+  }
+
+  .header {
+    font-size: 1.5em;
+    padding: 15px 15px 5px 15px;
+  }
+
+  .description {
+    padding: 0 15px 15px 15px;
+  }
+
+  .voice-button,
+  .send-button {
+    min-width: 45px;
+    min-height: 45px;
+    width: 45px;
+    height: 45px;
+    padding: 0;
+    flex-shrink: 0;
+  }
+
+  .input-container {
+    padding: 10px;
+  }
+
+  .chat-input {
+    padding: 10px 15px;
+    font-size: 14px;
+  }
 }
