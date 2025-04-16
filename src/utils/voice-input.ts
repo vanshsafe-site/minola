@@ -1,7 +1,45 @@
+// Type declarations for Web Speech API
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  start(): void;
+  stop(): void;
+  onstart: (event: Event) => void;
+  onresult: (event: SpeechRecognitionEvent) => void;
+  onerror: (event: SpeechRecognitionErrorEvent) => void;
+  onend: (event: Event) => void;
+}
+
+interface SpeechRecognitionEvent {
+  results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognitionResultList {
+  [index: number]: SpeechRecognitionResult;
+  length: number;
+}
+
+interface SpeechRecognitionResult {
+  [index: number]: SpeechRecognitionAlternative;
+  length: number;
+  isFinal: boolean;
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string;
+  confidence: number;
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string;
+  message: string;
+}
+
 // Voice Input Handler Module
 export class VoiceInputHandler {
   private isListening: boolean;
-  private recognition: any;
+  private recognition: SpeechRecognition | null;
   private options: {
     language: string;
     onStart: () => void;
@@ -37,10 +75,10 @@ export class VoiceInputHandler {
     // Check browser compatibility
     if (typeof window !== 'undefined') {
       if ('webkitSpeechRecognition' in window) {
-        // @ts-ignore - webkitSpeechRecognition is not in TypeScript's lib
+        // @ts-expect-error - webkitSpeechRecognition is not in TypeScript's lib
         this.recognition = new webkitSpeechRecognition();
       } else if ('SpeechRecognition' in window) {
-        // @ts-ignore - SpeechRecognition needs to be accessed from window
+        // @ts-expect-error - SpeechRecognition needs to be accessed from window
         this.recognition = new window.SpeechRecognition();
       } else {
         console.error('Speech recognition not supported in this browser');
@@ -58,12 +96,12 @@ export class VoiceInputHandler {
         this.options.onStart();
       };
 
-      this.recognition.onresult = (event: any) => {
+      this.recognition.onresult = (event: SpeechRecognitionEvent) => {
         const transcript = event.results[0][0].transcript;
         this.options.onResult(transcript);
       };
 
-      this.recognition.onerror = (event: any) => {
+      this.recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
         console.error('Speech recognition error:', event.error);
         this.options.onError(event.error);
       };

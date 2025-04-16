@@ -327,16 +327,6 @@ export const PoojaChat = () => {
     }
   };
   
-  // Use default API key
-  const useDefaultApiKey = () => {
-    setApiKey('');
-    setUsingDefaultKey(true);
-    localStorage.removeItem('openRouterApiKey');
-    setShowApiModal(false);
-    setApiKeyInput('');
-    addMessage("I've switched to the default API key. How can I help you today?", 'assistant');
-  };
-  
   // Update status indicator
   const updateStatus = (status: string) => {
     setStatusText(status);
@@ -550,7 +540,7 @@ export const PoojaChat = () => {
               </button>
             </div>
             <p style={{ fontSize: '12px', color: '#faf9f9', marginTop: '10px', textAlign: 'center' }}>
-                Don't have a key? <a href="https://openrouter.ai" target="_blank" style={{ color: 'var(--primary)', textDecoration: 'none', fontStyle: 'bold' }}>Get one from OpenRouter</a>
+                Don&apos;t have a key? <a href="https://openrouter.ai" target="_blank" style={{ color: 'var(--primary)', textDecoration: 'none', fontStyle: 'bold' }}>Get one from OpenRouter</a>
             </p>
           </div>
         </div>
