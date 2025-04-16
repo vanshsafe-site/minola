@@ -18,6 +18,8 @@ export const PoojaChat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [apiKey, setApiKey] = useState('');
+  const [backupApiKey1, setBackupApiKey1] = useState('');
+  const [backupApiKey2, setBackupApiKey2] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showApiModal, setShowApiModal] = useState(false);
@@ -26,6 +28,8 @@ export const PoojaChat = () => {
   const [selectedVoice, setSelectedVoice] = useState('default');
   const [voiceSpeed, setVoiceSpeed] = useState('1');
   const [apiKeyInput, setApiKeyInput] = useState('');
+  const [backupApiKeyInput1, setBackupApiKeyInput1] = useState('');
+  const [backupApiKeyInput2, setBackupApiKeyInput2] = useState('');
   const [usingDefaultKey, setUsingDefaultKey] = useState(true);
   
   // Refs
@@ -97,14 +101,25 @@ export const PoojaChat = () => {
         populateVoiceSelect();
       }
       
-      // Check for API key in localStorage
+      // Check for API keys in localStorage
       const storedApiKey = localStorage.getItem('openRouterApiKey');
+      const storedBackupApiKey1 = localStorage.getItem('openRouterApiKey_backup1');
+      const storedBackupApiKey2 = localStorage.getItem('openRouterApiKey_backup2');
+      
       if (storedApiKey) {
         setApiKey(storedApiKey);
         setUsingDefaultKey(false);
       } else {
         // If no API key is stored, we'll use the default one from the server
         setUsingDefaultKey(true);
+      }
+      
+      if (storedBackupApiKey1) {
+        setBackupApiKey1(storedBackupApiKey1);
+      }
+      
+      if (storedBackupApiKey2) {
+        setBackupApiKey2(storedBackupApiKey2);
       }
       
       // Add initial message
@@ -165,25 +180,42 @@ export const PoojaChat = () => {
       let aiResponse: string = "I'm having trouble connecting to my services right now. Can we try again in a moment?";
       let modelUsed = 'fallback';
       
+      // Create request object with optional API keys
+      const requestData: {
+        model: string,
+        messages: Array<{role: string, content: string}>,
+        customApiKey?: string,
+        backupApiKey1?: string,
+        backupApiKey2?: string
+      } = {
+        model: 'deepseek/deepseek-r1:free',
+        messages: [
+          { role: 'system', content: mentalHealthSystemPrompt },
+          ...messages.map(msg => ({ 
+            role: msg.role === 'user' ? 'user' : 'assistant', 
+            content: msg.text 
+          })),
+          { role: 'user', content: userMessageWithInstructions }
+        ]
+      };
+      
+      // Add user-provided API keys if available
+      if (!usingDefaultKey && apiKey) {
+        requestData.customApiKey = apiKey;
+      }
+      if (backupApiKey1) {
+        requestData.backupApiKey1 = backupApiKey1;
+      }
+      if (backupApiKey2) {
+        requestData.backupApiKey2 = backupApiKey2;
+      }
+      
       // First, try with DeepSeek model
       try {
-        const chatData = {
-          model: 'deepseek/deepseek-r1:free',
-          messages: [
-            { role: 'system', content: mentalHealthSystemPrompt },
-            ...messages.map(msg => ({ 
-              role: msg.role === 'user' ? 'user' : 'assistant', 
-              content: msg.text 
-            })),
-            { role: 'user', content: userMessageWithInstructions }
-          ],
-          customApiKey: usingDefaultKey ? '' : apiKey // Only send custom API key if not using default
-        };
-        
         const response = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(chatData),
+          body: JSON.stringify(requestData),
         });
         
         if (response.ok) {
@@ -208,23 +240,15 @@ export const PoojaChat = () => {
       // If DeepSeek failed, try Mistral
       if (modelUsed === 'fallback') {
         try {
-          const chatData = {
-            model: 'mistralai/mistral-7b-instruct',
-            messages: [
-              { role: 'system', content: mentalHealthSystemPrompt },
-              ...messages.map(msg => ({ 
-                role: msg.role === 'user' ? 'user' : 'assistant', 
-                content: msg.text 
-              })),
-              { role: 'user', content: userMessageWithInstructions }
-            ],
-            customApiKey: usingDefaultKey ? '' : apiKey // Only send custom API key if not using default
+          const mistralRequestData = {
+            ...requestData,
+            model: 'mistralai/mistral-7b-instruct'
           };
           
           const response = await fetch('/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(chatData),
+            body: JSON.stringify(mistralRequestData),
           });
           
           if (response.ok) {
@@ -334,25 +358,45 @@ export const PoojaChat = () => {
   // Save API key
   const saveApiKey = () => {
     const key = apiKeyInput.trim();
+    const backupKey1 = backupApiKeyInput1.trim();
+    const backupKey2 = backupApiKeyInput2.trim();
+    
+    // Save main API key
     if (key) {
       setApiKey(key);
       setUsingDefaultKey(false);
       localStorage.setItem('openRouterApiKey', key);
-      setShowApiModal(false);
-      setApiKeyInput('');
-      if (messages.length === 0) {
-        addMessage("I'm here to support your mental wellbeing. How can I help you today?", 'assistant');
-      }
     } else {
       // If empty key is provided, use the default one
       setApiKey('');
       setUsingDefaultKey(true);
       localStorage.removeItem('openRouterApiKey');
-      setShowApiModal(false);
-      setApiKeyInput('');
-      if (messages.length === 0) {
-        addMessage("I'm here to support your mental wellbeing. How can I help you today?", 'assistant');
-      }
+    }
+    
+    // Save backup API keys
+    if (backupKey1) {
+      setBackupApiKey1(backupKey1);
+      localStorage.setItem('openRouterApiKey_backup1', backupKey1);
+    } else {
+      setBackupApiKey1('');
+      localStorage.removeItem('openRouterApiKey_backup1');
+    }
+    
+    if (backupKey2) {
+      setBackupApiKey2(backupKey2);
+      localStorage.setItem('openRouterApiKey_backup2', backupKey2);
+    } else {
+      setBackupApiKey2('');
+      localStorage.removeItem('openRouterApiKey_backup2');
+    }
+    
+    setShowApiModal(false);
+    setApiKeyInput('');
+    setBackupApiKeyInput1('');
+    setBackupApiKeyInput2('');
+    
+    if (messages.length === 0) {
+      addMessage("I'm here to support your mental wellbeing. How can I help you today?", 'assistant');
     }
   };
   
@@ -553,21 +597,52 @@ export const PoojaChat = () => {
           <div className="modal-content">
             <h2 className="modal-title">API Key Options</h2>
             <p style={{ fontSize: '14px', color: '#faf9f9', marginBottom: '10px' }}>
-                You can use your own OpenRouter API key or the default key.
+                You can use your own OpenRouter API keys or the default key. Multiple keys provide fallback options.
             </p>
-            <input 
-              type="password" 
-              className="modal-input" 
-              placeholder="Enter your OpenRouter API key (or leave empty for default)"
-              value={apiKeyInput}
-              onChange={(e) => setApiKeyInput(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && saveApiKey()}
-            />
+            
+            <div className="mb-4">
+              <label className="block text-sm text-gray-200 mb-1">Primary API Key</label>
+              <input 
+                type="password" 
+                className="modal-input" 
+                placeholder="Enter your primary OpenRouter API key"
+                value={apiKeyInput}
+                onChange={(e) => setApiKeyInput(e.target.value)}
+              />
+            </div>
+            
+            <div className="mb-4">
+              <label className="block text-sm text-gray-200 mb-1">Backup API Key 1 (Optional)</label>
+              <input 
+                type="password" 
+                className="modal-input" 
+                placeholder="Enter your first backup API key"
+                value={backupApiKeyInput1}
+                onChange={(e) => setBackupApiKeyInput1(e.target.value)}
+              />
+            </div>
+            
+            <div className="mb-4">
+              <label className="block text-sm text-gray-200 mb-1">Backup API Key 2 (Optional)</label>
+              <input 
+                type="password" 
+                className="modal-input" 
+                placeholder="Enter your second backup API key"
+                value={backupApiKeyInput2}
+                onChange={(e) => setBackupApiKeyInput2(e.target.value)}
+              />
+            </div>
+            
             <div className="flex gap-2 mt-4">
               <button className="modal-button" onClick={saveApiKey}>
-                {apiKeyInput.trim() ? 'Save Custom API Key' : 'Use Default API Key'}
+                {apiKeyInput.trim() ? 'Save API Keys' : 'Use Default API Key'}
               </button>
             </div>
+            
+            <div className="security-note" style={{ fontSize: '12px', color: '#a3a3a3', marginTop: '15px', padding: '8px', border: '1px solid #444', borderRadius: '4px' }}>
+              <i className="fas fa-shield-alt mr-1"></i> <strong>Security Note:</strong> Your API keys are stored locally on your device and are sent securely to the server for each request. Keys are never exposed in the frontend code.
+            </div>
+            
             <p style={{ fontSize: '12px', color: '#faf9f9', marginTop: '10px', textAlign: 'center' }}>
                 Don&apos;t have a key? <a href="https://openrouter.ai" target="_blank" style={{ color: 'var(--primary)', textDecoration: 'none', fontStyle: 'bold' }}>Get one from OpenRouter</a>
             </p>
