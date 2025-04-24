@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,10 +13,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "P.O.O.J.A. AI - Personalized Online Outreach for Joy and Assistance",
-  description: "P.O.O.J.A. is your advanced AI mental health assistant with voice capabilities for personal support and wellness",
+  title: "Minola AI - Advanced Mental Health Assistant",
+  description: "Minola is your advanced AI mental health assistant with voice capabilities for personal support and wellness",
   icons: {
-    icon: "/heart.ico",
+    icon: "/favicon.ico",
+    apple: "/logo.png",
   },
 };
 
@@ -33,11 +33,9 @@ export default function RootLayout({
           rel="stylesheet" 
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
         />
+        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+        <link rel="apple-touch-icon" href="/logo.png" />
       </head>
-      <Script 
-        src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"
-        strategy="beforeInteractive"
-      />
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

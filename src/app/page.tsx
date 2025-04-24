@@ -1,5 +1,5 @@
-import { PoojaChat } from './components/PoojaChat';
+import { MinolaChat } from './components/MinolaChat';
 
 export default function Home() {
-  return <PoojaChat />;
+  return <MinolaChat />;
 }

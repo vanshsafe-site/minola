@@ -4,16 +4,18 @@ import { NextRequest, NextResponse } from 'next/server';
 const API_KEYS = [
   process.env.OPENROUTER_API_KEY || '',
   process.env.OPENROUTER_API_KEY_BACKUP_1 || '',
-  process.env.OPENROUTER_API_KEY_BACKUP_2 || ''
+  process.env.OPENROUTER_API_KEY_BACKUP_2 || '',
+  process.env.OPENROUTER_API_KEY_BACKUP_3 || '',
+  process.env.OPENROUTER_API_KEY_BACKUP_4 || ''
 ].filter(key => key); // Filter out empty keys
 
 export async function POST(request: NextRequest) {
   try {
     const requestData = await request.json();
-    const { model, messages, customApiKey, backupApiKey1, backupApiKey2 } = requestData;
+    const { model, messages, customApiKey, backupApiKey1, backupApiKey2, backupApiKey3, backupApiKey4 } = requestData;
     
     // Build a list of keys to try, starting with custom keys
-    const userProvidedKeys = [customApiKey, backupApiKey1, backupApiKey2].filter(key => key);
+    const userProvidedKeys = [customApiKey, backupApiKey1, backupApiKey2, backupApiKey3, backupApiKey4].filter(key => key);
     
     // If user provided custom API keys, try those first
     const keysToTry = userProvidedKeys.length > 0 ? 
@@ -46,7 +48,7 @@ export async function POST(request: NextRequest) {
           headers: {
             'Authorization': `Bearer ${apiKey}`,
             'Content-Type': 'application/json',
-            'X-Title': 'P.O.O.J.A Mental Health Assistant'
+            'X-Title': 'Minola Mental Health Assistant'
           },
           body: JSON.stringify({
             model,

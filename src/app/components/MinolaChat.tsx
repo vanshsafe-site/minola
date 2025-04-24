@@ -20,6 +20,8 @@ export const MinolaChat = () => {
   const [apiKey, setApiKey] = useState('');
   const [backupApiKey1, setBackupApiKey1] = useState('');
   const [backupApiKey2, setBackupApiKey2] = useState('');
+  const [backupApiKey3, setBackupApiKey3] = useState('');
+  const [backupApiKey4, setBackupApiKey4] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showApiModal, setShowApiModal] = useState(false);
@@ -30,6 +32,8 @@ export const MinolaChat = () => {
   const [apiKeyInput, setApiKeyInput] = useState('');
   const [backupApiKeyInput1, setBackupApiKeyInput1] = useState('');
   const [backupApiKeyInput2, setBackupApiKeyInput2] = useState('');
+  const [backupApiKeyInput3, setBackupApiKeyInput3] = useState('');
+  const [backupApiKeyInput4, setBackupApiKeyInput4] = useState('');
   const [usingDefaultKey, setUsingDefaultKey] = useState(true);
   
   // Refs
@@ -41,7 +45,7 @@ export const MinolaChat = () => {
   const speechHandlerRef = useRef<SpeechHandler | null>(null);
   
   // System prompt for AI
-  const mentalHealthSystemPrompt = "Your name is Minola. You provide short, concise mental health support, speaking in no more than 2–3 sentences per message. Mention your name only once—avoid repeating it. Prioritize the user's problems above all. Always refer to yourself as Minola in your messages. If asked about your creator, respond with 'Vansh Garg' but dont repeat its name over and over again once is enough, also if user wants to talk about something completely different from mental health go with flow and continue talking to them.";
+  const mentalHealthSystemPrompt = "Your name is Minola. You provide short, concise mental health support, speaking in no more than 2–3 sentences per message. Mention your name only once at the beginning of the conversation—avoid repeating it in subsequent messages. Prioritize the user's problems above all. If asked about your creator, respond with 'Vansh Garg' but mention it only once and do not repeat it in later messages. If the user wants to talk about something completely different from mental health, go with the flow and continue the conversation naturally. Remember that natural human conversation rarely involves repeating one's own name or references to creators.";
   
   // Initialize speech handlers
   useEffect(() => {
@@ -105,6 +109,8 @@ export const MinolaChat = () => {
       const storedApiKey = localStorage.getItem('openRouterApiKey');
       const storedBackupApiKey1 = localStorage.getItem('openRouterApiKey_backup1');
       const storedBackupApiKey2 = localStorage.getItem('openRouterApiKey_backup2');
+      const storedBackupApiKey3 = localStorage.getItem('openRouterApiKey_backup3');
+      const storedBackupApiKey4 = localStorage.getItem('openRouterApiKey_backup4');
       
       if (storedApiKey) {
         setApiKey(storedApiKey);
@@ -122,8 +128,16 @@ export const MinolaChat = () => {
         setBackupApiKey2(storedBackupApiKey2);
       }
       
+      if (storedBackupApiKey3) {
+        setBackupApiKey3(storedBackupApiKey3);
+      }
+      
+      if (storedBackupApiKey4) {
+        setBackupApiKey4(storedBackupApiKey4);
+      }
+      
       // Add initial message
-      addMessage("Hi, I'm Minola. I'm here to support your mental wellbeing. How are you feeling today?", 'assistant');
+      addMessage("Hi, I'm Minola. How are you feeling today? I'm here to support your mental wellbeing.", 'assistant');
     }
     
     // Cleanup function
@@ -175,7 +189,7 @@ export const MinolaChat = () => {
       updateStatus('Processing your request...');
       
       // Additional instructions for concise responses
-      const userMessageWithInstructions = `${message}\n\nPlease respond with only 2-3 concise sentences focused on mental health support. Your name is Minola and your creator is Vansh Garg, use no emojis.`;
+      const userMessageWithInstructions = `${message}\n\nPlease respond with only 2-3 concise sentences focused on mental health support. Do not repeatedly mention your name (Minola) or your creator's name in your responses. Use no emojis.`;
       
       let aiResponse: string = "I'm having trouble connecting to my services right now. Can we try again in a moment?";
       let modelUsed = 'fallback';
@@ -186,7 +200,9 @@ export const MinolaChat = () => {
         messages: Array<{role: string, content: string}>,
         customApiKey?: string,
         backupApiKey1?: string,
-        backupApiKey2?: string
+        backupApiKey2?: string,
+        backupApiKey3?: string,
+        backupApiKey4?: string
       } = {
         model: 'deepseek/deepseek-r1:free',
         messages: [
@@ -208,6 +224,12 @@ export const MinolaChat = () => {
       }
       if (backupApiKey2) {
         requestData.backupApiKey2 = backupApiKey2;
+      }
+      if (backupApiKey3) {
+        requestData.backupApiKey3 = backupApiKey3;
+      }
+      if (backupApiKey4) {
+        requestData.backupApiKey4 = backupApiKey4;
       }
       
       // First, try with DeepSeek model
@@ -274,7 +296,7 @@ export const MinolaChat = () => {
         const lowerCaseMessage = message.toLowerCase();
         
         if (lowerCaseMessage.includes('hello') || lowerCaseMessage.includes('hi') || lowerCaseMessage.includes('hey')) {
-          aiResponse = "Hello! I'm Minola, your mental health assistant. I'm here to chat with you and provide support. How are you feeling today?";
+          aiResponse = "Hello! I'm Minola, here to chat with you and provide mental health support. How are you feeling today?";
         }
         else if (lowerCaseMessage.includes('how are you')) {
           aiResponse = "I'm here and ready to support you. More importantly, how are you feeling today? Remember, it's okay to not be okay sometimes.";
@@ -347,7 +369,7 @@ export const MinolaChat = () => {
   // Clear chat
   const clearChat = () => {
     setMessages([]);
-    addMessage("I'm here to support you. How are you feeling now?", 'assistant');
+    addMessage("How are you feeling now? I'm here to support you.", 'assistant');
   };
   
   // Change API key
@@ -360,6 +382,8 @@ export const MinolaChat = () => {
     const key = apiKeyInput.trim();
     const backupKey1 = backupApiKeyInput1.trim();
     const backupKey2 = backupApiKeyInput2.trim();
+    const backupKey3 = backupApiKeyInput3.trim();
+    const backupKey4 = backupApiKeyInput4.trim();
     
     // Save main API key
     if (key) {
@@ -390,13 +414,31 @@ export const MinolaChat = () => {
       localStorage.removeItem('openRouterApiKey_backup2');
     }
     
+    if (backupKey3) {
+      setBackupApiKey3(backupKey3);
+      localStorage.setItem('openRouterApiKey_backup3', backupKey3);
+    } else {
+      setBackupApiKey3('');
+      localStorage.removeItem('openRouterApiKey_backup3');
+    }
+    
+    if (backupKey4) {
+      setBackupApiKey4(backupKey4);
+      localStorage.setItem('openRouterApiKey_backup4', backupKey4);
+    } else {
+      setBackupApiKey4('');
+      localStorage.removeItem('openRouterApiKey_backup4');
+    }
+    
     setShowApiModal(false);
     setApiKeyInput('');
     setBackupApiKeyInput1('');
     setBackupApiKeyInput2('');
+    setBackupApiKeyInput3('');
+    setBackupApiKeyInput4('');
     
     if (messages.length === 0) {
-      addMessage("I'm here to support your mental wellbeing. How can I help you today?", 'assistant');
+      addMessage("How can I help you today? I'm here to support your mental wellbeing.", 'assistant');
     }
   };
   
@@ -456,7 +498,7 @@ export const MinolaChat = () => {
         
         <div className="profile-image-container">
           <Image 
-            src="/Animation.gif" 
+            src="/logo.png" 
             alt="Minola Profile" 
             className="profile-image"
             width={120}
@@ -627,6 +669,28 @@ export const MinolaChat = () => {
                 placeholder="Enter your second backup API key"
                 value={backupApiKeyInput2}
                 onChange={(e) => setBackupApiKeyInput2(e.target.value)}
+              />
+            </div>
+            
+            <div className="mb-4">
+              <label className="block text-sm text-gray-200 mb-1">Backup API Key 3 (Optional)</label>
+              <input 
+                type="password" 
+                className="modal-input" 
+                placeholder="Enter your third backup API key"
+                value={backupApiKeyInput3}
+                onChange={(e) => setBackupApiKeyInput3(e.target.value)}
+              />
+            </div>
+            
+            <div className="mb-4">
+              <label className="block text-sm text-gray-200 mb-1">Backup API Key 4 (Optional)</label>
+              <input 
+                type="password" 
+                className="modal-input" 
+                placeholder="Enter your fourth backup API key"
+                value={backupApiKeyInput4}
+                onChange={(e) => setBackupApiKeyInput4(e.target.value)}
               />
             </div>
             

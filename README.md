@@ -1,6 +1,6 @@
-# P.O.O.J.A. AI
+# Minola AI
 
-P.O.O.J.A. (**P**ersonal **O**nline **O**utreach for **J**oy and **A**ssistance) is an advanced AI mental health assistant with voice capabilities, built using Next.js and modern web technologies.
+Minola AI is an advanced AI mental health assistant with voice capabilities, built using Next.js and modern web technologies.
 
 ## Features
 
@@ -33,7 +33,7 @@ P.O.O.J.A. (**P**ersonal **O**nline **O**utreach for **J**oy and **A**ssistance)
 2. Install dependencies:
 
 ```bash
-cd pooja-chatbot
+cd minola-chatbot
 npm install
 ```
 
@@ -69,5 +69,8 @@ This project is open source and available under the MIT license.
 
 ## Acknowledgements
 
-- Created originally as ELIZA by Vansh Garg
-- Converted to Next.js and renamed to P.O.O.J.A.
+- Created originally as K.E.V.I.N by Vansh Garg
+- Converted to Next.js and renamed to Minola AI
+- Marks the 9th version of Vansh Garg's Mental Health Assistant
+
+
